@@ -375,7 +375,12 @@ class Indiserver:
     def update_values(self):
         ports = list_usbports()
         arr = describe_ports(ports)
-        self.values = [ { 'value': d, 'name': str(i+1) } for i, d in enumerate(arr) ]
+        if self.length is None:
+            self.length = len(arr) + 8
+        self.values = [ 
+            { 'value': arr[i] if i < len(arr) else '', 
+              'name': str(i+1)
+            } for i in range(self.length) ]
  
     def set_property(self):
         attrib = { 'name': self.name, 'state': self.state }
@@ -402,9 +407,11 @@ class Indiserver:
             self.state = 'Alert'
             self.message = None
             changes = [ 
-                (child.text.strip().lower(), self.values[int(child.attrib['name'])-1]['value'])
+                (child.text.strip().lower(), 
+                 self.values[int(child.attrib['name'])-1]['value'])
                 for child in root if child.tag == f'oneText' and child.text and child.text.strip() 
             ]
+            self.update_values()
             if len(changes) == 1:
                 command, location = changes[0]
                 location = location.split()[0]
