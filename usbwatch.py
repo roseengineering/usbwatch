@@ -372,12 +372,7 @@ class Indiserver:
     def update_values(self):
         ports = list_usbports()
         arr = describe_ports(ports)
-        if self.length is None:
-            self.length = len(arr)
-        self.values = [ { 
-            'value': arr[i] if i < len(arr) else '',
-            'name': str(i+1) 
-        } for i in range(self.length) ]
+        self.values = [ { 'value': d, 'name': str(i+1) } for i, d in enumerate(arr) ]
  
     def set_property(self):
         attrib = { 'name': self.name, 'state': self.state }
@@ -441,6 +436,7 @@ class Indiserver:
             self.publish(self.define_property())
         elif root.tag == 'newTextVector' and device == self.device and name == self.name:
             self.new_property(root)
+            self.publish(self.define_property())
             self.publish(self.set_property())
 
 
