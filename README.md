@@ -142,7 +142,7 @@ options:
   --disable LOCATION  tell USB hub to disable port (default: None)
   --off LOCATION      tell USB hub to power off port (default: None)
   --on LOCATION       tell USB hub to power on port (default: None)
-  -v, --verbose       verbose cli error messages (default: False)
+  -v, --verbose       enable verbose messages (default: False)
 
 server:
   --rest              start REST server (default: False)
