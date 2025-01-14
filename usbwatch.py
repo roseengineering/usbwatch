@@ -510,7 +510,7 @@ def parse_args():
     parser.add_argument('--disable', metavar='LOCATION', help='tell USB hub to disable port')
     parser.add_argument('--off', metavar='LOCATION', help='tell USB hub to power off port')
     parser.add_argument('--on', metavar='LOCATION', help='tell USB hub to power on port')
-    parser.add_argument('-v', '--verbose', action='store_true', help='verbose error messages')
+    parser.add_argument('-v', '--verbose', action='store_true', help='enable verbose messages')
     group = parser.add_argument_group('server')
     group.add_argument('--rest', action='store_true', help='start REST server')
     group.add_argument('--indi', action='store_true', help='start INDI server')
