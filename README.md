@@ -24,8 +24,7 @@ The tool works on linux and must be invoked as root.
 
 ### Five Commands Provided.
 
-The tool provides four commands to control a USB device:
-1) soft reset, or a driver reset, 2) hard reset, or a reset performed by the hub, 3) disable, 4) power on, and 5) power off.
+The tool provides four commands to control a USB device: 1) soft reset, or a driver reset, 2) hard reset, or a reset performed by the hub, 3) disable, 4) power on, and 5) power off.
 Each command requires the USB port location of the device to control.  The location is in the format of 1-00.00.00....
 The first number is the bus number.  The next numbers are the port numbers of the hubs the device is
 daisy chained off of.  The last number is the port number of the USB device itself.  If a command
