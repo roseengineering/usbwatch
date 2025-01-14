@@ -362,6 +362,37 @@ class Indiserver:
                     else:
                         self._close_conn(s)
 
+    def set_property(self):
+        attrib = { 
+            'name': self.name, 
+            'state': self.state
+        }
+        if self.message:
+            attrib['message'] = self.message
+        root = ET.Element(f'setTextVector', attrib=attrib, device=self.device)
+        for d in self.values:
+            attrib = { 'name': d['name'] }
+            el = ET.SubElement(root, f'oneText', attrib=attrib)
+            el.text = d['value']
+        return root
+
+    def define_property(self):
+        attrib = { 
+            'perm': 'rw', 
+            'group': self.group, 
+            'name': self.name,
+            'state': self.state
+        }
+        root = ET.Element(f'defTextVector', attrib=attrib, device=self.device)
+        for d in self.values:
+            name = d['name']
+            attrib = { 'name': name, 'label': name }
+            el = ET.SubElement(root, f'defText', attrib=attrib)
+            el.text = str(d['value'])
+        return root
+
+    ###
+
     def __init__(self, verbose=False):
         hostname = socket.gethostname().split('.')[0]
         self.device = f'USBWATCH_{hostname.upper()}'
@@ -382,27 +413,7 @@ class Indiserver:
               'name': str(i+1)
             } for i in range(self.length) ]
  
-    def set_property(self):
-        attrib = { 'name': self.name, 'state': self.state }
-        if self.message:
-            attrib['message'] = self.message
-        root = ET.Element(f'setTextVector', attrib=attrib, device=self.device)
-        for d in self.values:
-            attrib = { 'name': d['name'] }
-            el = ET.SubElement(root, f'oneText', attrib=attrib)
-            el.text = d['value']
-        return root
-
-    def define_property(self):
-        attrib = { 'perm': 'rw', 'group': self.group, 'name': self.name, 'state': self.state }
-        root = ET.Element(f'defTextVector', attrib=attrib, device=self.device)
-        for d in self.values:
-            attrib = { 'name': d['name'] }
-            el = ET.SubElement(root, f'defText', attrib=attrib)
-            el.text = str(d['value'])
-        return root
-
-    def new_property(self, root):
+    def onnew_property(self, root):
         try:
             self.state = 'Alert'
             self.message = None
@@ -445,7 +456,7 @@ class Indiserver:
         if root.tag == 'getProperties':
             self.publish(self.define_property())
         elif root.tag == 'newTextVector' and device == self.device and name == self.name:
-            self.new_property(root)
+            self.onnew_property(root)
             self.publish(self.define_property())
             self.publish(self.set_property())
 
