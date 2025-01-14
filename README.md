@@ -53,6 +53,16 @@ $ curl http://luna.local/
 1-01.04.04    [PCE] 239a:8120 ttyACM0 ttyACM1 - Raspberry Pi Pico W (E6616408438D8B2A)
 ```
 
+The flags inside the brackets mean the following:
+
+```
+P    USB Port has power
+E    USB Port is enabled
+C    USB Port is connected
+S    USB Port is suspended
+R    USB Port is resetting
+```
+
 To soft reset the NanoVNA-H device via the command line I can use:
 
 ```
