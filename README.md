@@ -34,7 +34,7 @@ is not provided then the tool will just list all devices connect to the computer
 ### Three Modes of Operation.
 
 The tool provides three modes of operation.  It can be invoked 1) on the command line, 2) as a REST server, or 3) as a INDI astronomical remote control
-server.  For example to list USB devices using REST I can run:
+server.  For example to list USB devices using REST I ran:
 
 ```
 $ curl http://luna.local/
@@ -69,7 +69,7 @@ To soft reset the NanoVNA-H device via the command line I can use:
 $ sudo $(which python) usbwatch.py --reset 1-01.04.02.04 
 ```
 
-Or if I have the same REST server running I can also do the following:
+Or using the REST server above, I can also reset it with curl:
 
 ```
 $ curl -d 1-01.04.02.04 http://luna.local/reset
