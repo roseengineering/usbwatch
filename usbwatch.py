@@ -525,7 +525,7 @@ def soft_reset(location):
     if (d := find(ports, 'location', location)) is None:
         raise ValueError('bad usb port location, port not found')
     if 'dev' not in d:
-        raise ValueError('usb device not enumerated or plugged in, try the other "hub" commands')
+        raise ValueError('usb device not enumerated or plugged in, use the other commands')
     with open(usb_filename(d['dev']), 'w+') as fd:
         usb_reset(fd)
 
