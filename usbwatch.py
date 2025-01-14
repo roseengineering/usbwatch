@@ -309,8 +309,9 @@ class Indiserver:
             try:
                 text = '\n'.join(buf[n:i+1])
                 root = ET.fromstring(text)
-                # print('------- parse -------')
-                # print(text)
+                if self.verbose:
+                    print('------- parse -------')
+                    print(text)
                 yield root
                 n = i + 1
             except ET.ParseError:
@@ -332,8 +333,9 @@ class Indiserver:
             ET.indent(root)
             payload = ET.tostring(root, encoding='latin', xml_declaration=False)
             payload += b'\n'
-            # print('----- server_publish ------')
-            # print(payload.decode(), end='')
+            if self.verbose:
+                print('----- server_publish ------')
+                print(payload.decode(), end='')
             for s in self._socklist:
                 s.sendall(payload)
 
@@ -360,13 +362,14 @@ class Indiserver:
                     else:
                         self._close_conn(s)
 
-    def __init__(self):
+    def __init__(self, verbose=False):
         hostname = socket.gethostname().split('.')[0]
         self.device = f'USBWATCH_{hostname.upper()}'
         self.name = 'PORT'
         self.state = 'Ok'
         self.group = 'Main Control'
         self.length = None
+        self.verbose = verbose
         self.update_values()
 
     def update_values(self):
@@ -507,7 +510,7 @@ def parse_args():
     parser.add_argument('--disable', metavar='LOCATION', help='tell USB hub to disable port')
     parser.add_argument('--off', metavar='LOCATION', help='tell USB hub to power off port')
     parser.add_argument('--on', metavar='LOCATION', help='tell USB hub to power on port')
-    parser.add_argument('-v', '--verbose', action='store_true', help='verbose cli error messages')
+    parser.add_argument('-v', '--verbose', action='store_true', help='verbose error messages')
     group = parser.add_argument_group('server')
     group.add_argument('--rest', action='store_true', help='start REST server')
     group.add_argument('--indi', action='store_true', help='start INDI server')
@@ -521,6 +524,8 @@ def soft_reset(location):
     location = parse_location(location)
     if (d := find(ports, 'location', location)) is None:
         raise ValueError('bad usb port location, port not found')
+    if 'dev' not in d:
+        raise ValueError('no usb address, device not enumerated')
     with open(usb_filename(d['dev']), 'w+') as fd:
         usb_reset(fd)
 
@@ -530,6 +535,8 @@ def set_feature(location, feature, value):
     if (d := find(ports, 'location', location)) is None:
         raise ValueError('bad usb port location, port not found')
     d = find(ports, 'location', location[:-1])
+    if 'dev' not in d:
+        raise ValueError('no usb address, device not enumerated')
     with open(usb_filename(d['dev']), 'w+') as fd:
         usb_hub_feature(fd, location[-1], feature, value)
 
@@ -567,7 +574,7 @@ def main():
             server.serve_forever()
     elif args.indi:
         print(f'starting INDI server on {args.host}:{args.indi_port}...', file=sys.stderr)
-        server = Indiserver()
+        server = Indiserver(verbose=args.verbose)
         server.loop(args.host, args.indi_port)
     else:
         command_line(args)
