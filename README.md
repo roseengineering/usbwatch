@@ -1,5 +1,5 @@
 
-[image of usbwatch operating as a INDI server](res/cover.png)
+![image of usbwatch operating as a INDI server](res/cover.png)
 
 ## Usbwatch.
 
