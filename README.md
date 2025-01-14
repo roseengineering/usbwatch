@@ -142,4 +142,12 @@ server:
   --indi-port PORT    INDI server port (default: 7624)
 ```
 
+### Notes.
+
+This work was based on the work of hubpower.c, Vadim Mikhailov's uhubctl.c, and 
+Alan Stern's usbreset.c.
+Please see the following websites regarding individual power switching of usb ports by hubs,
+1) https://github.com/mvp/uhubctl and
+2) https://elinux.org/RPi\_Powered\_USB\_Hubs#Problem\_USB\_Hubs.
+
 
