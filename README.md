@@ -144,10 +144,10 @@ server:
 
 ### Notes.
 
-This work was based on the work of hubpower.c, Vadim Mikhailov's uhubctl.c, and 
+This tool was based off the work of hubpower.c, Vadim Mikhailov's uhubctl.c, and 
 Alan Stern's usbreset.c.
 Please see the following websites regarding individual power switching of usb ports by hubs,
 1) https://github.com/mvp/uhubctl and
-2) https://elinux.org/RPi\_Powered\_USB\_Hubs#Problem\_USB\_Hubs.
+2) https://elinux.org/RPi_Powered_USB_Hubs#Problem_USB_Hubs.
 
 
