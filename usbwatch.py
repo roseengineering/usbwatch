@@ -525,7 +525,7 @@ def soft_reset(location):
     if (d := find(ports, 'location', location)) is None:
         raise ValueError('bad usb port location, port not found')
     if 'dev' not in d:
-        raise ValueError('no usb address, usb device not enumerated or plugged in')
+        raise ValueError('usb device not enumerated or plugged in, try the other "hub" commands')
     with open(usb_filename(d['dev']), 'w+') as fd:
         usb_reset(fd)
 
@@ -536,7 +536,7 @@ def set_feature(location, feature, value):
         raise ValueError('bad usb port location, port not found')
     d = find(ports, 'location', location[:-1])
     if 'dev' not in d:
-        raise ValueError('no usb address, usb hub not enumerated')
+        raise ValueError('cannot talk to device\'s hub, usb hub never enumerated')
     with open(usb_filename(d['dev']), 'w+') as fd:
         usb_hub_feature(fd, location[-1], feature, value)
 
