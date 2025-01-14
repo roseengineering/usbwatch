@@ -33,8 +33,7 @@ is not provided then the tool will just list all devices connect to the computer
 
 ### Three Modes of Operation.
 
-The tool provides three modes of operation.  It can be invoked
-1) on the command line, 2) as a REST server, or 3) as a INDI astronomical remote control
+The tool provides three modes of operation.  It can be invoked 1) on the command line, 2) as a REST server, or 3) as a INDI astronomical remote control
 server.  For example to list USB devices using REST I can run:
 
 ```
