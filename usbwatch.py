@@ -447,8 +447,9 @@ class Indiserver:
         except Exception:
             message = traceback.format_exc().strip()
             print(message, file=sys.stderr)
+            message = message.splitlines()[-1].partition(':')[2].strip()
             self.state = 'Alert'
-            self.message = message.splitlines()[-1]
+            self.message = message
 
     def on_message(self, root):
         device = root.attrib.get('device')
@@ -513,7 +514,8 @@ class HTTPRequestHandler(BaseHTTPRequestHandler):
         except Exception:
             message = traceback.format_exc().strip()
             print(message, file=sys.stderr)
-            return self.bad_method(message.splitlines()[-1])
+            message = message.splitlines()[-1].partition(':')[2].strip()
+            return self.bad_method(message)
 
 
 ################################
@@ -580,7 +582,7 @@ def command_line(args):
     except Exception:
         message = traceback.format_exc().strip()
         if not args.verbose:
-            message = message.splitlines()[-1]
+            message = message.splitlines()[-1].partition(':')[2].strip()
         print(message, file=sys.stderr)
 
 
