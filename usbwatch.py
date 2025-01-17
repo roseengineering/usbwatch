@@ -183,9 +183,12 @@ def usb_hub_numports(fd, usb_level):
 def parse_location(location):
     location = location.strip().split(':')[0]
     bus, _, port_numbers = location.partition('-')
-    bus = int(bus)
-    port_numbers = port_numbers.split('.')
-    port_numbers = tuple(int(d) for d in port_numbers)
+    try:
+        bus = int(bus)
+        port_numbers = port_numbers.split('.')
+        port_numbers = tuple(int(d) for d in port_numbers)
+    except ValueError:
+        raise ValueError('bad usb port location')
     location = (bus,) + port_numbers
     return location
 
@@ -265,8 +268,6 @@ def describe_ports(ports):
         product = d.get('product')
         serial_number = d.get('serial_number')
         ###
-        if is_hub:
-            continue
         address = str(location[0])
         port_numbers = '.'.join(f'{d:02d}' for d in location[1:])
         if port_numbers:
