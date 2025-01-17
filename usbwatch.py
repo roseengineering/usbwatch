@@ -187,10 +187,9 @@ def parse_location(location):
     port_numbers = port_numbers.strip()
     try:
         location = (int(bus),) 
-        if port_numbers:
-            port_numbers = port_numbers.split('.')
-            port_numbers = tuple(int(d) for d in port_numbers)
-            location += port_numbers
+        port_numbers = port_numbers.split('.')
+        port_numbers = tuple(int(d) for d in port_numbers)
+        location += port_numbers
     except ValueError:
         raise ValueError('bad usb port location')
     return location
