@@ -148,7 +148,7 @@ server:
   --rest              start REST server (default: False)
   --indi              start INDI server (default: False)
   --host HOST         server host (default: 0.0.0.0)
-  --rest-port PORT    REST server port (default: 80)
+  --rest-port PORT    REST server port (default: 8080)
   --indi-port PORT    INDI server port (default: 7624)
 ```
 
