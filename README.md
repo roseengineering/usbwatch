@@ -91,8 +91,8 @@ POST /        # list USB devices
 POST /reset   # soft reset the posted device
 POST /hard    # tell the hub to reset the posted device
 POST /disable # tell the hub to disable the posted device
-POST /on      # tell the hub to turn on the posted device
-POST /off     # tell the hub to turn off the posted device
+POST /up      # tell the hub to power on the posted device
+POST /down    # tell the hub to power off the posted device
 ```
 
 ### The INDI server.
@@ -130,7 +130,7 @@ pip install -r requirements.txt
 
 ```
 usage: usbwatch [-h] [--reset LOCATION] [--hard LOCATION] [--disable LOCATION]
-                [--off LOCATION] [--on LOCATION] [-v] [--rest] [--indi]
+                [--down LOCATION] [--up LOCATION] [-v] [--rest] [--indi]
                 [--host HOST] [--rest-port PORT] [--indi-port PORT]
 
 Tool to soft reset, hard reset, power on and off, or disable USB ports.
@@ -140,8 +140,8 @@ options:
   --reset LOCATION    tell driver to soft reset port (default: None)
   --hard LOCATION     tell USB hub to hard reset port (default: None)
   --disable LOCATION  tell USB hub to disable port (default: None)
-  --off LOCATION      tell USB hub to power off port (default: None)
-  --on LOCATION       tell USB hub to power on port (default: None)
+  --down LOCATION     tell USB hub to power off port (default: None)
+  --up LOCATION       tell USB hub to power on port (default: None)
   -v, --verbose       enable verbose messages (default: False)
 
 server:

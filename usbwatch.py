@@ -439,9 +439,9 @@ class Indiserver:
                     set_feature(location, USB_PORT_FEAT_RESET, 1)
                 elif command == 'disable':
                     set_feature(location, USB_PORT_FEAT_ENABLE, 0)
-                elif command == 'on':
+                elif command == 'up':
                     set_feature(location, USB_PORT_FEAT_POWER, 1)
-                elif command == 'off':
+                elif command == 'down':
                     set_feature(location, USB_PORT_FEAT_POWER, 0)
                 else:
                     self.message = 'command not recognized'
@@ -511,9 +511,9 @@ class HTTPRequestHandler(BaseHTTPRequestHandler):
                 set_feature(text, USB_PORT_FEAT_RESET, 1)
             elif self.path == '/disable':
                 set_feature(text, USB_PORT_FEAT_ENABLE, 0)
-            elif self.path == '/on':
+            elif self.path == '/up':
                 set_feature(text, USB_PORT_FEAT_POWER, 1)
-            elif self.path == '/off':
+            elif self.path == '/down':
                 set_feature(text, USB_PORT_FEAT_POWER, 0)
             elif self.path != '/':
                 return self.not_found()
@@ -535,8 +535,8 @@ def parse_args():
     parser.add_argument('--reset', metavar='LOCATION', help='tell driver to soft reset port')
     parser.add_argument('--hard', metavar='LOCATION', help='tell USB hub to hard reset port')
     parser.add_argument('--disable', metavar='LOCATION', help='tell USB hub to disable port')
-    parser.add_argument('--off', metavar='LOCATION', help='tell USB hub to power off port')
-    parser.add_argument('--on', metavar='LOCATION', help='tell USB hub to power on port')
+    parser.add_argument('--down', metavar='LOCATION', help='tell USB hub to power off port')
+    parser.add_argument('--up', metavar='LOCATION', help='tell USB hub to power on port')
     parser.add_argument('-v', '--verbose', action='store_true', help='enable verbose messages')
     group = parser.add_argument_group('server')
     group.add_argument('--rest', action='store_true', help='start REST server')
@@ -583,10 +583,10 @@ def command_line(args):
             set_feature(args.hard, USB_PORT_FEAT_RESET, 1)
         elif args.disable:
             set_feature(args.disable, USB_PORT_FEAT_ENABLE, 0)
-        elif args.on:
-            set_feature(args.on, USB_PORT_FEAT_POWER, 1)
-        elif args.off:
-            set_feature(args.off, USB_PORT_FEAT_POWER, 0)
+        elif args.up:
+            set_feature(args.up, USB_PORT_FEAT_POWER, 1)
+        elif args.down:
+            set_feature(args.down, USB_PORT_FEAT_POWER, 0)
         print(show_ports())
     except Exception:
         message = traceback.format_exc().strip()
