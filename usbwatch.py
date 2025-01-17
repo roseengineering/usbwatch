@@ -542,7 +542,7 @@ def parse_args():
     group.add_argument('--rest', action='store_true', help='start REST server')
     group.add_argument('--indi', action='store_true', help='start INDI server')
     group.add_argument('--host', default='0.0.0.0', help='server host')
-    group.add_argument('--rest-port', metavar='PORT', type=int, default=80, help='REST server port')
+    group.add_argument('--rest-port', metavar='PORT', type=int, default=8080, help='REST server port')
     group.add_argument('--indi-port', metavar='PORT', type=int, default=7624, help='INDI server port')
     return parser.parse_args()
 
