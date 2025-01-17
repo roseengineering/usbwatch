@@ -160,4 +160,12 @@ Please see the following websites regarding individual power switching of usb po
 1) https://github.com/mvp/uhubctl and
 2) https://elinux.org/RPi_Powered_USB_Hubs#Problem_USB_Hubs.
 
+If you do want to run usbwatch.py root, another option is to add the following 
+to your "udev" rules, assuming you are part of the dialout group.
+
+```
+$ cat /etc/udev/rules.d/dialout.rules
+SUBSYSTEM=="usb", MODE="0660", GROUP="dialout"
+```
+
 
