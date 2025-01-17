@@ -140,8 +140,8 @@ options:
   --reset LOCATION    tell driver to soft reset port (default: None)
   --hard LOCATION     tell USB hub to hard reset port (default: None)
   --disable LOCATION  tell USB hub to disable port (default: None)
-  --down LOCATION     tell USB hub to power off port (default: None)
   --up LOCATION       tell USB hub to power on port (default: None)
+  --down LOCATION     tell USB hub to power off port (default: None)
   -v, --verbose       enable verbose messages (default: False)
 
 server:
