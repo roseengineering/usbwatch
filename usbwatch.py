@@ -181,15 +181,18 @@ def usb_hub_numports(fd, usb_level):
 ###########################
 
 def parse_location(location):
-    location = location.strip().split(':')[0]
+    location = location.split(':')[0]
     bus, _, port_numbers = location.partition('-')
+    bus = bus.strip()
+    port_numbers = port_numbers.strip()
     try:
-        bus = int(bus)
-        port_numbers = port_numbers.split('.')
-        port_numbers = tuple(int(d) for d in port_numbers)
+        location = (int(bus),) 
+        if port_numbers:
+            port_numbers = port_numbers.split('.')
+            port_numbers = tuple(int(d) for d in port_numbers)
+            location += port_numbers
     except ValueError:
         raise ValueError('bad usb port location')
-    location = (bus,) + port_numbers
     return location
 
 def update_comports(ports):
