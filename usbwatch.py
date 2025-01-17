@@ -198,7 +198,8 @@ def update_comports(ports):
     for info in list_ports.comports():
         if info.vid is not None and info.pid is not None:
             location = parse_location(info.location)
-            if d := find(ports, 'location', location):
+            d = find(ports, 'location', location)
+            if d:
                 if d.get('name'):
                     d['name'] = f'{d["name"]} {info.name}' 
                 else:
@@ -218,7 +219,8 @@ def update_hubs(ports):
                 for portnum in range(1, numports + 1):
                     port_status = usb_hub_port_status(fd, portnum, usb_level)
                     port_location = location + (portnum,)
-                    if res := find(ports, 'location', port_location):
+                    res = find(ports, 'location', port_location)
+                    if res:
                         res['port_status'] = port_status
                     else:
                         ports.append({ 
@@ -357,13 +359,15 @@ class Indiserver:
                 for s in read_s:
                     if s == conn:
                         self._accept_conn(s)
-                    elif chunk := s.recv(self.BUFFER_SIZE):
-                        text = chunk.decode('latin')
-                        self._buffer_update(self._readbuf[s], text)
-                        for root in self._buffer_parse(self._readbuf[s]):
-                            self.on_message(root)
                     else:
-                        self._close_conn(s)
+                        chunk = s.recv(self.BUFFER_SIZE)
+                        if chunk:
+                            text = chunk.decode('latin')
+                            self._buffer_update(self._readbuf[s], text)
+                            for root in self._buffer_parse(self._readbuf[s]):
+                                self.on_message(root)
+                        else:
+                            self._close_conn(s)
 
     def set_property(self):
         attrib = { 
@@ -545,7 +549,8 @@ def parse_args():
 def soft_reset(location):
     ports = list_usbports()
     location = parse_location(location)
-    if (d := find(ports, 'location', location)) is None:
+    d = find(ports, 'location', location)
+    if d is None:
         raise ValueError('bad usb port location, port not found')
     if 'dev' not in d:
         raise ValueError('usb device not enumerated or plugged in, use the other commands')
@@ -555,7 +560,8 @@ def soft_reset(location):
 def set_feature(location, feature, value):
     ports = list_usbports()
     location = parse_location(location)
-    if (d := find(ports, 'location', location)) is None:
+    d = find(ports, 'location', location)
+    if d is None:
         raise ValueError('bad usb port location, port not found')
     d = find(ports, 'location', location[:-1])
     if 'dev' not in d:
