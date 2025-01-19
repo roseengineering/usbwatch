@@ -608,16 +608,12 @@ def disable_port(location):
     location = parse_location(location)
     ports = list_usbports()
     d = find(ports, 'location', location)
-    if d is None:
+    if d is None or len(location) < 2:
         raise ValueError('bad usb port location, port not found')
-    if d.get('is_hub'):
-        for n in range(d.get('numports', 0)):
-            usb_disable_port(d['dev'], n + 1)
-    else:     
-        d = find(ports, 'location', location[:-1])
-        if d is None or not d.get('is_hub'):
-            raise ValueError('bad usb port location, hub not found')
-        return usb_disable_port(d['dev'], location[-1])
+    d = find(ports, 'location', location[:-1])
+    if d is None or not d.get('is_hub'):
+        raise ValueError('bad usb port location, hub not found')
+    return usb_disable_port(d['dev'], location[-1])
 
 def show_ports():
     ports = list_usbports()
