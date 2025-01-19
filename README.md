@@ -170,29 +170,6 @@ SUBSYSTEM=="usb", MODE="0660", GROUP="dialout"
 
 ### Bugs and Issues.
 
-At the moment the hub does not actually physically switch off, when you tell it to turn off using the usb hub SET\_FEATURE command, even when it supports PPPS.  I have to implement the following logic, taken from uhubctl.c, somehow in addition:
-
-```
-   if (hub->pn_len == 0) {
-      snprintf(disable_path, PATH_MAX,
-          "/sys/bus/usb/devices/%s-0:%d.0/usb%s-port%i/disable",
-       // "/sys/bus/usb/devices/%s:%d.0  /%s-port%i   /disable",
-          hub->location, configuration, hub->location, port
-      );
-    } else {
-      snprintf(disable_path, PATH_MAX,
-          "/sys/bus/usb/devices/%s:%d.0/%s-port%i/disable",
-          hub->location, configuration, hub->location, port
-      );
-    }
-    printf("disable_path %s\n", disable_path);
-
-    int disable_fd = open(disable_path, O_WRONLY);
-    if (disable_fd >= 0) {
-        rc = write(disable_fd, on ? "0" : "1", 1);
-        close(disable_fd);
-    }
-```
-
+At the moment the hub does not actually physically switch off, when you tell it to turn off using the usb hub SET\_FEATURE command, even when it supports PPPS.  The code in uhubctl.c however does.  I am not sure how.
 
 

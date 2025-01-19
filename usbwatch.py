@@ -231,6 +231,8 @@ def update_hubs(ports):
 def list_usbports():
     ports = []
     for dev in usb.core.find(find_all=True):
+        cfg = dev.get_active_configuration()
+        configuration = cfg.bConfigurationValue
         usb_level = dev.bcdUSB >> 8
         port_numbers = dev.port_numbers or ()
         location = (dev.bus,) + port_numbers
@@ -246,6 +248,7 @@ def list_usbports():
             'port_number': dev.port_number,
             'address': dev.address,
             'vidpid': (dev.idVendor, dev.idProduct),
+            'configuration': configuration,
             'location': location,
             'usb_level': usb_level,
             'serial_number': device_serial(dev),
@@ -272,25 +275,29 @@ def describe_ports(ports):
         product = d.get('product')
         serial_number = d.get('serial_number')
         ###
-        address = str(location[0])
+        port_status = '[' + ''.join(port_status or []) + ']'
+        port_location = str(location[0])
         port_numbers = '.'.join(f'{d:02d}' for d in location[1:])
+        ###
         if port_numbers:
-            address = f'{address}-{port_numbers}'
-        if not vidpid:
-            product = ''
-        elif is_hub:
+            port_location = f'{port_location}-{port_numbers}'
+        if is_hub:
             product = 'Hub'
+        elif not vidpid:
+            product = ''
         elif not product:
             product = '?'
+        ###
         if serial_number:
             product = f'{product} ({serial_number})'
         if manufacturer:
             product = f'{manufacturer} {product}'
         if name:
-            product = f'{name} - {product}'
-        vidpid = ':'.join(f'{d:04x}' for d in vidpid) if vidpid else ''
-        port_status = '[' + ''.join(port_status or []) + ']'
-        line = f'{address:13s} {port_status:5s} {vidpid} {product}'
+            product = f'{name} - {product}' if product else name
+        if vidpid:
+            vidpid = ':'.join(f'{d:04x}' for d in vidpid)
+            product = f'{vidpid} {product}'
+        line = f'{port_location:13s} {port_status:5s} {product}'
         data.append(line)
     return data
 
@@ -546,6 +553,7 @@ def parse_args():
     group.add_argument('--indi-port', metavar='PORT', type=int, default=7624, help='INDI server port')
     return parser.parse_args()
 
+
 def soft_reset(location):
     ports = list_usbports()
     location = parse_location(location)
@@ -553,9 +561,10 @@ def soft_reset(location):
     if d is None:
         raise ValueError('bad usb port location, port not found')
     if 'dev' not in d:
-        raise ValueError('usb device not enumerated or plugged in, use the other commands')
+        raise ValueError('usb device not enumerated or plugged in')
     with open(usb_filename(d['dev']), 'w+') as fd:
         usb_reset(fd)
+
 
 def set_feature(location, feature, value):
     ports = list_usbports()
@@ -564,16 +573,18 @@ def set_feature(location, feature, value):
     if d is None:
         raise ValueError('bad usb port location, port not found')
     d = find(ports, 'location', location[:-1])
-    if 'dev' not in d:
-        raise ValueError('cannot talk to device\'s hub, usb hub never enumerated')
+    if d is None or 'dev' not in d:
+        raise ValueError('hub not found, internal error')
     with open(usb_filename(d['dev']), 'w+') as fd:
         usb_hub_feature(fd, location[-1], feature, value)
+
 
 def show_ports():
     ports = list_usbports()
     arr = describe_ports(ports)
     text = '\n'.join(arr)
     return text
+
 
 def command_line(args):
     try:
