@@ -163,8 +163,8 @@ Please see the following websites regarding individual power switching of usb po
 1) https://github.com/mvp/uhubctl and
 2) https://elinux.org/RPi_Powered_USB_Hubs#Problem_USB_Hubs.
 
-If you do not want to run usbwatch.py root, another option is to add the following 
-to your "udev" rules, however you still need to be root to turn off the device.
+If you do not want to run usbwatch.py as root, another option is to add the following 
+to your "udev" rules, but you still need to be root to turn off the device.
 
 ```
 $ cat /etc/udev/rules.d/dialout.rules
