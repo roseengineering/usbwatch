@@ -177,6 +177,30 @@ def usb_hub_numports(fd, usb_level):
         pass
 
 
+# /sys routines
+###########################
+
+def usb_disable_port(dev, port, value):
+    try:
+        cfg = dev.get_active_configuration()
+        conf = cfg.bConfigurationValue
+    except:
+        raise ValueError('could not get configuration')
+    bus = dev.bus
+    port_numbers = dev.port_numbers or ()
+    port_numbers = '.'.join(f'{n:d}' for n in port_numbers)
+    hub = f'{bus}-{port_numbers}' if port_numbers else f'{bus}'
+    if port_numbers:
+        filename = f'/sys/bus/usb/devices/{hub}:{conf}.0/{hub}-port{port}/disable'
+    else:
+        filename = f'/sys/bus/usb/devices/{bus}-0:{conf}.0/usb{bus}-port{port}/disable'
+    if not os.path.exists(filename):
+        raise ValueError(f'linux device not found: {filename}')
+    with open(filename, 'wb') as fd: 
+        value = b'1' if value else b'0'
+        fd.write(value)
+
+
 # list usb ports
 ###########################
 
@@ -187,12 +211,13 @@ def parse_location(location):
     port_numbers = port_numbers.strip()
     try:
         location = (int(bus),) 
-        port_numbers = port_numbers.split('.')
-        port_numbers = tuple(int(d) for d in port_numbers)
-        location += port_numbers
+        if port_numbers:
+            port_numbers = port_numbers.split('.')
+            port_numbers = tuple(int(d) for d in port_numbers)
+            location += port_numbers
+        return location
     except ValueError:
         raise ValueError('bad usb port location')
-    return location
 
 def update_comports(ports):
     for info in list_ports.comports():
@@ -231,8 +256,6 @@ def update_hubs(ports):
 def list_usbports():
     ports = []
     for dev in usb.core.find(find_all=True):
-        cfg = dev.get_active_configuration()
-        configuration = cfg.bConfigurationValue
         usb_level = dev.bcdUSB >> 8
         port_numbers = dev.port_numbers or ()
         location = (dev.bus,) + port_numbers
@@ -248,7 +271,6 @@ def list_usbports():
             'port_number': dev.port_number,
             'address': dev.address,
             'vidpid': (dev.idVendor, dev.idProduct),
-            'configuration': configuration,
             'location': location,
             'usb_level': usb_level,
             'serial_number': device_serial(dev),
@@ -449,6 +471,8 @@ class Indiserver:
                     set_feature(location, USB_PORT_FEAT_POWER, 1)
                 elif command == 'down':
                     set_feature(location, USB_PORT_FEAT_POWER, 0)
+                elif command == 'off':
+                    disable_port(text, 1)
                 else:
                     self.message = 'command not recognized'
                     return
@@ -521,6 +545,8 @@ class HTTPRequestHandler(BaseHTTPRequestHandler):
                 set_feature(text, USB_PORT_FEAT_POWER, 1)
             elif self.path == '/down':
                 set_feature(text, USB_PORT_FEAT_POWER, 0)
+            elif self.path == '/off':
+                disable_port(text, 1)
             elif self.path != '/':
                 return self.not_found()
             return self.success(show_ports())
@@ -543,6 +569,7 @@ def parse_args():
     parser.add_argument('--disable', metavar='LOCATION', help='tell USB hub to disable port')
     parser.add_argument('--up', metavar='LOCATION', help='tell USB hub to power on port')
     parser.add_argument('--down', metavar='LOCATION', help='tell USB hub to power off port')
+    parser.add_argument('--off', metavar='LOCATION', help='tell kernel to power off port')
     parser.add_argument('-v', '--verbose', action='store_true', help='enable verbose messages')
     group = parser.add_argument_group('server')
     group.add_argument('--rest', action='store_true', help='start REST server')
@@ -552,10 +579,9 @@ def parse_args():
     group.add_argument('--indi-port', metavar='PORT', type=int, default=7624, help='INDI server port')
     return parser.parse_args()
 
-
 def soft_reset(location):
-    ports = list_usbports()
     location = parse_location(location)
+    ports = list_usbports()
     d = find(ports, 'location', location)
     if d is None:
         raise ValueError('bad usb port location, port not found')
@@ -564,26 +590,38 @@ def soft_reset(location):
     with open(usb_filename(d['dev']), 'w+') as fd:
         usb_reset(fd)
 
-
 def set_feature(location, feature, value):
-    ports = list_usbports()
     location = parse_location(location)
+    ports = list_usbports()
     d = find(ports, 'location', location)
-    if d is None:
+    if d is None or len(location) < 2:
         raise ValueError('bad usb port location, port not found')
     d = find(ports, 'location', location[:-1])
-    if d is None or 'dev' not in d:
+    if d is None or not d.get('is_hub'):
         raise ValueError('hub not found, internal error')
     with open(usb_filename(d['dev']), 'w+') as fd:
         usb_hub_feature(fd, location[-1], feature, value)
 
+def disable_port(location, value):
+    location = parse_location(location)
+    ports = list_usbports()
+    d = find(ports, 'location', location)
+    if d is None:
+        raise ValueError('bad usb port location, port not found')
+    if d.get('is_hub'):
+        for n in range(d.get('numports', 0)):
+            usb_disable_port(d['dev'], n + 1, value)
+    else:     
+        d = find(ports, 'location', location[:-1])
+        if d is None or not d.get('is_hub'):
+            raise ValueError('bad usb port location, hub not found')
+        return usb_disable_port(d['dev'], location[-1], value)
 
 def show_ports():
     ports = list_usbports()
     arr = describe_ports(ports)
     text = '\n'.join(arr)
     return text
-
 
 def command_line(args):
     try:
@@ -597,13 +635,14 @@ def command_line(args):
             set_feature(args.up, USB_PORT_FEAT_POWER, 1)
         elif args.down:
             set_feature(args.down, USB_PORT_FEAT_POWER, 0)
+        elif args.off:
+            disable_port(args.off, 1)
         print(show_ports())
     except Exception:
         message = traceback.format_exc().strip()
         if not args.verbose:
             message = message.splitlines()[-1].partition(':')[2].strip()
         print(message, file=sys.stderr)
-
 
 def main():
     args = parse_args()

@@ -22,9 +22,9 @@ individual switching).
 
 The tool works on linux and must be invoked as root.
 
-### Five Commands Provided.
+### Six Commands Provided.
 
-The tool provides five commands to control a USB device: 1) soft reset, or a driver reset, 2) hard reset, or a reset performed by the hub, 3) disable, 4) power on, and 5) power off.
+The tool provides five commands to control a USB device: 1) soft reset, or a driver reset, 2) hard reset, or a reset performed by the hub, 3) disable, 4) power up, 5) power down, and 6) off to physically disconnect the power from the device.
 Each command requires the USB port location of the device to control.  The location is in the format of 1-00.00.00....
 The first number is the bus number.  The next numbers are the port numbers of the hubs the device is
 daisy chained off of.  The last number is the port number of the USB device itself.  If a command
@@ -92,7 +92,8 @@ POST /reset   # soft reset the posted device
 POST /hard    # tell the hub to reset the posted device
 POST /disable # tell the hub to disable the posted device
 POST /up      # tell the hub to power on the posted device
-POST /down    # tell the hub to power off the posted device
+POST /down    # tell the hub to power down the posted device
+POST /off     # tell the kernel to power off the posted device
 ```
 
 ### The INDI server.
@@ -112,7 +113,7 @@ However, indiserver can still connect to it using its @host:port relay syntax.
 The INDI device USBWATCH_{hostname}, where hostname is the host the tool is 
 running on, should now show up on your INDI client.
 The INDI device provides the following commands:
-"reset", "hard", "disable", "on" and "off".   Enter one of these commands into the 
+"reset", "hard", "disable", "up", "down", and "off".   Enter one of these commands into the 
 appropriate field of the USB device to command.  Only one field can be set
 at a time.  You might have to erase a previously written command.  If no command is given
 then the port listing will be refreshed.
@@ -130,8 +131,9 @@ pip install -r requirements.txt
 
 ```
 usage: usbwatch [-h] [--reset LOCATION] [--hard LOCATION] [--disable LOCATION]
-                [--down LOCATION] [--up LOCATION] [-v] [--rest] [--indi]
-                [--host HOST] [--rest-port PORT] [--indi-port PORT]
+                [--up LOCATION] [--down LOCATION] [--off LOCATION] [-v]
+                [--rest] [--indi] [--host HOST] [--rest-port PORT]
+                [--indi-port PORT]
 
 Tool to soft reset, hard reset, power on and off, or disable USB ports.
 
@@ -142,6 +144,7 @@ options:
   --disable LOCATION  tell USB hub to disable port (default: None)
   --up LOCATION       tell USB hub to power on port (default: None)
   --down LOCATION     tell USB hub to power off port (default: None)
+  --off LOCATION      tell kernel to power off port (default: None)
   -v, --verbose       enable verbose messages (default: False)
 
 server:
@@ -165,11 +168,12 @@ to your "udev" rules, assuming you are part of the dialout group.
 
 ```
 $ cat /etc/udev/rules.d/dialout.rules
+SUBSYSTEM=="usb", MODE="0666"
+```
+OR, which does not seem to work on a raspberry pi,
+```
+$ cat /etc/udev/rules.d/dialout.rules
 SUBSYSTEM=="usb", MODE="0660", GROUP="dialout"
 ```
-
-### Bugs and Issues.
-
-At the moment the hub does not actually physically switch off, when you tell it to turn off using the usb hub SET\_FEATURE command, even when it supports PPPS.  The code in uhubctl.c however does.  I am not sure how.
 
 
