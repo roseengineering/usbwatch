@@ -101,9 +101,6 @@ class usbdevfs_ctrltransfer(LittleEndianStructure):
         ("data", POINTER(None))
     ]
 
-def usb_filename(dev):
-    return f'/dev/bus/usb/{dev.bus:03d}/{dev.address:03d}'
-
 def usb_reset(fd):
     fcntl.ioctl(fd, USBDEVFS_RESET, 0)
 
@@ -177,10 +174,16 @@ def usb_hub_numports(fd, usb_level):
         pass
 
 
-# /sys routines
+# dev routines
 ###########################
 
-def usb_disable_port(dev, port, value):
+def usb_filename(dev):
+    filename = f'/dev/bus/usb/{dev.bus:03d}/{dev.address:03d}'
+    if not os.path.exists(filename):
+        raise ValueError(f'usb device not found: {filename}')
+    return filename
+
+def usb_disable_port(dev, port):
     try:
         cfg = dev.get_active_configuration()
         conf = cfg.bConfigurationValue
@@ -197,8 +200,7 @@ def usb_disable_port(dev, port, value):
     if not os.path.exists(filename):
         raise ValueError(f'linux device not found: {filename}')
     with open(filename, 'wb') as fd: 
-        value = b'1' if value else b'0'
-        fd.write(value)
+        fd.write(b'1')
 
 
 # list usb ports
@@ -472,7 +474,7 @@ class Indiserver:
                 elif command == 'down':
                     set_feature(location, USB_PORT_FEAT_POWER, 0)
                 elif command == 'off':
-                    disable_port(text, 1)
+                    disable_port(text)
                 else:
                     self.message = 'command not recognized'
                     return
@@ -546,7 +548,7 @@ class HTTPRequestHandler(BaseHTTPRequestHandler):
             elif self.path == '/down':
                 set_feature(text, USB_PORT_FEAT_POWER, 0)
             elif self.path == '/off':
-                disable_port(text, 1)
+                disable_port(text)
             elif self.path != '/':
                 return self.not_found()
             return self.success(show_ports())
@@ -602,7 +604,7 @@ def set_feature(location, feature, value):
     with open(usb_filename(d['dev']), 'w+') as fd:
         usb_hub_feature(fd, location[-1], feature, value)
 
-def disable_port(location, value):
+def disable_port(location):
     location = parse_location(location)
     ports = list_usbports()
     d = find(ports, 'location', location)
@@ -610,12 +612,12 @@ def disable_port(location, value):
         raise ValueError('bad usb port location, port not found')
     if d.get('is_hub'):
         for n in range(d.get('numports', 0)):
-            usb_disable_port(d['dev'], n + 1, value)
+            usb_disable_port(d['dev'], n + 1)
     else:     
         d = find(ports, 'location', location[:-1])
         if d is None or not d.get('is_hub'):
             raise ValueError('bad usb port location, hub not found')
-        return usb_disable_port(d['dev'], location[-1], value)
+        return usb_disable_port(d['dev'], location[-1])
 
 def show_ports():
     ports = list_usbports()
@@ -636,7 +638,7 @@ def command_line(args):
         elif args.down:
             set_feature(args.down, USB_PORT_FEAT_POWER, 0)
         elif args.off:
-            disable_port(args.off, 1)
+            disable_port(args.off)
         print(show_ports())
     except Exception:
         message = traceback.format_exc().strip()
