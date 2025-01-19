@@ -275,12 +275,6 @@ def describe_ports(ports):
         product = d.get('product')
         serial_number = d.get('serial_number')
         ###
-        port_status = '[' + ''.join(port_status or []) + ']'
-        port_location = str(location[0])
-        port_numbers = '.'.join(f'{d:02d}' for d in location[1:])
-        ###
-        if port_numbers:
-            port_location = f'{port_location}-{port_numbers}'
         if is_hub:
             product = 'Hub'
         elif not vidpid:
@@ -297,6 +291,11 @@ def describe_ports(ports):
         if vidpid:
             vidpid = ':'.join(f'{d:04x}' for d in vidpid)
             product = f'{vidpid} {product}'
+        port_status = '[' + ''.join(port_status or []) + ']'
+        port_location = str(location[0])
+        port_numbers = '.'.join(f'{d:02d}' for d in location[1:])
+        if port_numbers:
+            port_location = f'{port_location}-{port_numbers}'
         line = f'{port_location:13s} {port_status:5s} {product}'
         data.append(line)
     return data
