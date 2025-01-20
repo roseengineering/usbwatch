@@ -37,7 +37,7 @@ The tool provides three modes of operation.  It can be invoked 1) on the command
 server.  For example to list USB devices using REST I ran:
 
 ```
-$ curl http://luna.local/
+$ curl http://luna.local:8080/
 1-01.01       [P]    
 1-01.02.01    [PCE] 1a86:7523 ttyUSB1 - USB Serial
 1-01.02.02    [PCE] 1a86:7523 ttyUSB2 - USB Serial
@@ -72,7 +72,7 @@ $ sudo $(which python) usbwatch.py --reset 1-01.04.02.04
 Or using the REST server above, I can also reset it with curl:
 
 ```
-$ curl -d 1-01.04.02.04 http://luna.local/reset
+$ curl -d 1-01.04.02.04 http://luna.local:8080/reset
 ```
 
 ### The REST server.
