@@ -20,11 +20,11 @@ USB device, but it can also tell the device's hub to hard reset it, disable it,
 or power it on and off (with power actually removed from the device if the hub supports
 individual switching).
 
-The tool works on linux and must be invoked as root.
+The tool works on linux and must be invoked as root [1](#root).
 
 ### Six Commands Provided.
 
-The tool provides five commands to control a USB device: 1) soft reset, or a driver reset, 2) hard reset, or a reset performed by the hub, 3) disable, 4) power up, 5) power down, and 6) off to physically disconnect the power from the device.
+The tool provides six commands to control a USB device: 1) soft reset, or a driver reset, 2) hard reset, or a reset performed by the hub, 3) disable, 4) power up, 5) power down, and 6) off to physically disconnect the power from the device.
 Each command requires the USB port location of the device to control.  The location is in the format of 1-00.00.00....
 The first number is the bus number.  The next numbers are the port numbers of the hubs the device is
 daisy chained off of.  The last number is the port number of the USB device itself.  If a command
@@ -163,6 +163,7 @@ Please see the following websites regarding individual power switching of usb po
 1) https://github.com/mvp/uhubctl and
 2) https://elinux.org/RPi_Powered_USB_Hubs#Problem_USB_Hubs.
 
+<a name="root"></a>
 If you do not want to run usbwatch.py as root, another option is to add the following 
 to your "udev" rules, but you still need to be root to turn off the device.
 
