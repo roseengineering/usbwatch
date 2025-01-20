@@ -63,7 +63,7 @@ S    USB Port is suspended
 R    USB Port is resetting
 ```
 
-To soft reset the NanoVNA-H device via the command line I can use:
+To soft reset the NanoVNA-H device via the command line I use:
 
 ```
 $ sudo $(which python) usbwatch.py --reset 1-01.04.02.04 
