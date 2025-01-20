@@ -13,7 +13,7 @@ remotely controlling devices, such as with remote astronomy, is
 that USB devices can hang and become inoperable.
 A driver soft reset of the device might right it
 but sometimes the fix requires someone to physically
-cycle the power on the device, or even 
+cycle power on the device, or even 
 reboot the host computer.  This tool is an attempt to provide addition options 
 to help assist with this problem.  It provides not only a way to soft reset a
 USB device, but it can also tell the device's hub to hard reset it, disable it,
@@ -24,7 +24,7 @@ The tool works on linux and must be invoked as root [[2]](#2).
 
 ### Six Commands Provided.
 
-The tool provides six commands to control a USB device: 1) soft reset, or a driver reset, 2) hard reset, or a reset performed by the hub, 3) disable, 4) power up, 5) power down, and 6) off to physically disconnect the power from the device.
+The tool provides six commands to control a USB device: 1) soft reset, or a driver reset, 2) hard reset, or a reset performed by the hub, 3) disable, 4) power up, 5) power down, and 6) off to physically disconnect power from the device.
 Each command requires the USB port location of the device to control.  The location is in the format of 1-00.00.00....
 The first number is the bus number.  The next numbers are the port numbers of the hubs the device is
 daisy chained off of.  The last number is the port number of the USB device itself.  If a command
