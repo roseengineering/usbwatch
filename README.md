@@ -160,8 +160,8 @@ server:
 1. This tool was based off the work of hubpower.c, Vadim Mikhailov's uhubctl.c, and 
 Alan Stern's usbreset.c.
 Please see the following websites regarding individual power switching of usb ports by hubs,
-1) https://github.com/mvp/uhubctl and
-2) https://elinux.org/RPi_Powered_USB_Hubs#Problem_USB_Hubs.
+- https://github.com/mvp/uhubctl and
+- https://elinux.org/RPi_Powered_USB_Hubs#Problem_USB_Hubs.
 
 <a name="2"></a>
 2. If you do not want to run usbwatch.py as root, another option is to add the following 
