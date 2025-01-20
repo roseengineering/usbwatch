@@ -174,3 +174,4 @@ SUBSYSTEM=="usb", MODE="0660", GROUP="dialout"
 ```
 3\. I still recommend installing uhubctl.  It seems to work better at physically turning off ports than my code, even though I use the same call. It does additional work to ensure the port actually turns off.
 
+4\. Raspberry Pi computers support physically turning off the power of a device port.  For example, to disable the power to a usb device on port 4 of my Raspberry Pi 4, I used the command line option, "--off 1-1.4".  Then to power it back on I used "--up 1-1.4".
