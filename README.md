@@ -163,13 +163,11 @@ server:
 
 2. <a name="2"></a> If you do not want to run usbwatch.py as root, another option is to add the following 
 to your "udev" rules, but you still need to be root to turn off the device.
-
 ```
 $ cat /etc/udev/rules.d/dialout.rules
 SUBSYSTEM=="usb", MODE="0666"
 ```
 OR, assuming you are part of the dialout group, you can try this.  However it does not seem to work on a raspberry pi.
-
 ```
 $ cat /etc/udev/rules.d/dialout.rules
 SUBSYSTEM=="usb", MODE="0660", GROUP="dialout"
