@@ -157,12 +157,12 @@ server:
 
 ### Notes.
 
-1) This tool was based off the work of hubpower.c, Vadim Mikhailov's uhubctl.c, and Alan Stern's usbreset.c.  Please see the following websites regarding individual power switching of usb ports by hubs,
+ 1) This tool was based off the work of hubpower.c, Vadim Mikhailov's uhubctl.c, and Alan Stern's usbreset.c.  Please see the following websites regarding individual power switching of usb ports by hubs,
 - https://github.com/mvp/uhubctl and
 - https://elinux.org/RPi_Powered_USB_Hubs#Problem_USB_Hubs.
 
 <a name="2"></a> 
-2) If you do not want to run usbwatch.py as root, another option is to add the following to your "udev" rules, but you still need to be root to turn off the device.
+ 2) If you do not want to run usbwatch.py as root, another option is to add the following to your "udev" rules, but you still need to be root to turn off the device.
 ```
 $ cat /etc/udev/rules.d/dialout.rules
 SUBSYSTEM=="usb", MODE="0666"
