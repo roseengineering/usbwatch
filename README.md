@@ -172,5 +172,5 @@ OR, assuming you are part of the dialout group, you can try this.  However it do
 $ cat /etc/udev/rules.d/dialout.rules
 SUBSYSTEM=="usb", MODE="0660", GROUP="dialout"
 ```
-3\. I still recommend installing uhubctl.  It seems to work better at physically turning off ports than my code, even though I use the same call, it does additional work to ensure the port actually turns off.
+3\. I still recommend installing uhubctl.  It seems to work better at physically turning off ports than my code, even though I use the same call. It does additional work to ensure the port actually turns off.
 
